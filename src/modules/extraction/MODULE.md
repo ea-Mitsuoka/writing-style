@@ -56,8 +56,17 @@ domain/candidate.py       # HumanTurn, Candidate, ScanStats, keyword weights, sc
 domain/report.py          # render_report (Markdown)
 application/ports.py      # TranscriptSource (port), ScanResult
 application/extract_candidates.py  # ExtractCandidates use case, Extraction
+infrastructure/claude_code_records.py      # human_text / assistant_text / record_timestamp (record shape lives here only)
+infrastructure/claude_code_transcripts.py  # ClaudeCodeTranscriptSource (adapter), TranscriptsUnavailable
+interface/cli.py          # main(): arguments, wiring, report file, summary line, exit codes
 ```
 
-`infrastructure/` (Claude Code transcript reader) and `interface/` (CLI,
-`make extract-candidates`) arrive in the follow-up change for issue #8; tests mirror this
-tree at `tests/modules/extraction/`.
+Adapter and CLI contract: `ClaudeCodeTranscriptSource(projects_dir).scan(since)` walks
+`**/*.jsonl` in sorted order, treats the first path component as the project and the file
+stem as the session id, pairs each human turn with the preceding assistant text in the same
+file, keeps undated records under `--since`, and raises `TranscriptsUnavailable` when the
+directory is missing or empty. `main(argv, stdout, stderr, today)` writes the report to
+`--out` (default `out/candidates-<YYYYMMDD>.md`, never overwriting), prints one summary
+line, and exits 0 or 2. Tests mirror this tree: `tests/modules/extraction/unit/` (domain,
+application, record interpretation; no I/O) and `tests/modules/extraction/integration/`
+(transcript adapter and CLI over temporary directories).
