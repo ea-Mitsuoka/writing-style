@@ -1,0 +1,12 @@
+# AI Runtime Adapter
+
+Read [CLAUDE.md](CLAUDE.md) completely and follow it before acting; it loads the explicit
+agent profile.
+
+| Capability | Runtime equivalent |
+|------------|--------------------|
+| Hooks | Run `make format && make lint` after edits; guard commands with `.ai/guardrails.md` |
+| Skills | Read matching `.skills/*.skill.md` completely |
+| Memory | Use runtime context; never store secrets |
+
+Do not duplicate or replace the profile inputs.

@@ -1,0 +1,26 @@
+# Container image scan (REL-020). Runs only when a Dockerfile exists.
+name: Container Scan
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "**/Dockerfile"
+      - ".github/workflows/container.yml"
+      - "scripts/actions/container-scan/**"
+  push:
+    branches: [main]
+    paths:
+      - "Dockerfile"
+      - "**/Dockerfile"
+      - "scripts/actions/container-scan/**"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: ./scripts/actions/container-scan

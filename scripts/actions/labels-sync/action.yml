@@ -1,0 +1,11 @@
+name: Label synchronization implementation
+description: Apply the repository label policy without deleting unmanaged labels
+
+runs:
+  using: composite
+  steps:
+    - name: Synchronize labels
+      uses: crazy-max/ghaction-github-labeler@548a7c3603594ec17c819e1239f281a3b801ab4d # v6
+      with:
+        yaml-file: .github/labels.yml
+        skip-delete: true

@@ -1,0 +1,27 @@
+# DAST — OWASP ZAP baseline scan against a deployed environment.
+# Requires DAST_TARGET_URL repository variable (staging URL). Never point at production
+# with active scan; baseline (passive) only unless ops approves.
+name: DAST
+
+on:
+  schedule:
+    - cron: "0 5 * * 1"   # weekly
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Target URL (overrides DAST_TARGET_URL variable)"
+        required: false
+
+permissions:
+  contents: read
+  issues: write   # ZAP files findings as issues
+
+jobs:
+  zap-baseline:
+    runs-on: ubuntu-latest
+    if: vars.DAST_TARGET_URL != '' || inputs.target != ''
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: ./scripts/actions/dast-baseline
+        with:
+          target: ${{ inputs.target || vars.DAST_TARGET_URL }}

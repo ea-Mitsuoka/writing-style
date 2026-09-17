@@ -1,0 +1,26 @@
+# Files the template-sync workflow must NEVER overwrite in downstream repos —
+# everything a project customizes. Rules and skills sync; executable workflows are
+# ported through separately reviewed PRs because the legacy GitHub App lacks Workflows
+# permission (ADR-0007).
+src/**
+tests/**
+docs/**
+profiles/**
+CLAUDE.md
+README.md
+Makefile
+.env.example
+.ai/mission.md
+.ai/decision-log.md
+.ai/project/**
+.github/CODEOWNERS
+.github/governance/repository.json
+.github/inheritance/agent-profile.json
+.github/workflows/**
+.templatesyncignore
+
+# Foundation-owned documentation is the only synchronized docs namespace. This Action
+# passes entries to `git reset --`, so exclusions use Git pathspec `:!` syntax rather
+# than `.gitignore` negation. Keep them last so broad rules do not re-exclude the files.
+:!docs/foundation/
+:!docs/foundation/**

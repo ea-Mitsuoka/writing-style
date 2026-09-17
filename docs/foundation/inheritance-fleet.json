@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "repositories": [
+    {
+      "repository": "ea-Mitsuoka/nextjs-saas-template",
+      "directory": "nextjs-saas-template",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
+      "parent_directory": "ai-dev-foundation",
+      "lifecycle": "active",
+      "reason": "maintained Next.js family template"
+    },
+    {
+      "repository": "ea-Mitsuoka/secure-ga4-bq-template",
+      "directory": "secure-ga4-bq-template",
+      "parent_repository": "ea-Mitsuoka/terraform-gcp-template",
+      "parent_directory": "terraform-gcp-template",
+      "lifecycle": "active",
+      "reason": "maintained Terraform family project"
+    },
+    {
+      "repository": "ea-Mitsuoka/secure-ai-controls",
+      "directory": "secure-ai-controls",
+      "parent_repository": "ea-Mitsuoka/terraform-gcp-template",
+      "parent_directory": "terraform-gcp-template",
+      "lifecycle": "active",
+      "reason": "maintained Terraform family project; synchronized from the company account since 2026-09-01"
+    },
+    {
+      "repository": "ea-Mitsuoka/terraform-gcp-template",
+      "directory": "terraform-gcp-template",
+      "parent_repository": "ea-Mitsuoka/ai-dev-foundation",
+      "parent_directory": "ai-dev-foundation",
+      "lifecycle": "active",
+      "reason": "maintained Terraform family template"
+    }
+  ]
+}

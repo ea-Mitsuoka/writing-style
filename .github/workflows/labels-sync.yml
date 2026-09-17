@@ -1,0 +1,23 @@
+# Keeps GitHub labels in sync with .github/labels.yml (Policy as Code).
+name: Sync Labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/labels.yml"
+      - "scripts/actions/labels-sync/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read      # checkout of a private repository needs it
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: ./scripts/actions/labels-sync
