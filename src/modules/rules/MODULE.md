@@ -20,6 +20,8 @@ content, stability judgement, or promotion to skills (ADR-0001).
 | `ValidateRules(source).handle() -> Report` | application | Validate every document a `RuleSource` yields; `Report.findings` in source order, `Report.checked` documents counted |
 | `RuleSource` / `RuleDocument` | application | Port a source adapter implements; a document is `(path, text)` or `(path, None, read_error)` |
 | `SCOPE_TAGS`, `KINDS` | domain | The vocabulary copied once from the vault `AGENTS.md`; the only place it exists in code |
+| `FilesystemRuleSource(vault_root)` | infrastructure | `RuleSource` over a vault checkout: `30_memory/feedback/ja-*.md` directly under it (FR-001), sorted by name; raises `VaultLayoutError` when the directory is absent |
+| `main(argv, environ, stdout, stderr) -> int` | interface | CLI (`python3 -m src.modules.rules.interface.cli`, `make rules-validate`): `--vault` or `$OBSIDIAN_VAULT_PATH`; one finding per stdout line as `path:code:message`; exit 0 clean, 1 findings, 2 usage error (FR-011, FR-012) |
 
 ## Events
 
@@ -54,7 +56,9 @@ domain/frontmatter.py     # frontmatter block parser (flat keys + one nested `me
 domain/rule.py            # Finding, KINDS, SCOPE_TAGS, validate_rule
 application/ports.py      # RuleSource (port), RuleDocument
 application/validate_rules.py  # ValidateRules use case, Report
+infrastructure/filesystem_rule_source.py  # FilesystemRuleSource (adapter), VaultLayoutError
+interface/cli.py          # main(): argument parsing, wiring, output format, exit codes
 ```
 
-`infrastructure/` (filesystem source) and `interface/` (CLI) arrive in the follow-up
-change for issue #3; tests mirror this tree at `tests/modules/rules/`.
+Tests mirror this tree: `tests/modules/rules/unit/` (domain, application; no I/O) and
+`tests/modules/rules/integration/` (filesystem adapter and CLI over temporary vaults).

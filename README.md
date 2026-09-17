@@ -12,7 +12,7 @@
 ## このリポジトリが持つもの・持たないもの
 
 | 区分 | 内容 | 置き場所 |
-|------|------|---------|
+| -- | -- | -- |
 | **持つ** | 抽出（指摘の回収）・正規化（ルール化）・検証（書式と適用範囲の必須項目）・昇格（安定したルールを共通 AI 基盤の Skill に変換）を行うスクリプトと手順 | このリポジトリ |
 | **持たない** | ルール本文（用語対訳表・文体規則・構造規則・NG/OK 例） | メモリ Vault [ai-memory](https://github.com/ea-Mitsuoka/ai-memory) の `30_memory/feedback/` |
 | **持たない** | 開発方針（コード規約・レビュー・ワークフロー） | [ai-dev-foundation](https://github.com/ea-Mitsuoka/ai-dev-foundation) の `.ai/` |
@@ -30,7 +30,7 @@
 ```
 
 | 段階 | 内容 | 担当 |
-|------|------|------|
+| -- | -- | -- |
 | 抽出 | Claude Code のセッション記録や claude.ai のエクスポートから、表現への指摘を回収する | スクリプト（この repo） |
 | ルール化 | 用語固定・文体規則・構造規則の 3 種に正規化し、**適用範囲**と **NG/OK 例**を必須とする | 人 + AI |
 | 保存 | `30_memory/feedback/` に 1 ルール 1 ファイルで置き、`MEMORY.md` に索引する | Vault の規約に従う |
@@ -41,11 +41,15 @@
 
 ## 状態
 
-初期化直後。スクリプトは未実装で、まず以下を進める。
+| 段階 | 状態 |
+| -- | -- |
+| ルールファイルの書式（frontmatter の `kind` / `scope`、本文の順序） | 定義済み。Vault の `AGENTS.md`「表現ルール」節と `rule-atom` 雛形 |
+| 書式検証（`src/modules/rules`、[ADR-0001](docs/adr/0001-validate-writing-rules-from-the-memory-vault.md)） | 実装済み。`make rules-validate`（`$OBSIDIAN_VAULT_PATH` または `VAULT=<path>`）で実 Vault を検査する。要件は [docs/requirements.md](docs/requirements.md) |
+| Claude Code セッション記録からの指摘抽出 | 未着手 |
+| 安定判定と Skill への昇格 | 未着手（別 issue で要件化） |
 
-1. ルールファイルの書式（frontmatter の追加項目: 適用範囲・種別）を Vault の `AGENTS.md` と矛盾しない形で定義する
-2. 書式検証スクリプト（適用範囲・NG/OK 例・出典なし）を実装する
-3. Claude Code セッション記録からの抽出スクリプトを実装する
+検証の出力は 1 件 1 行 `相対パス:要件コード:メッセージ`（終了コード 0 = 違反なし、1 = 違反あり、
+2 = 使い方の誤り）。CI は同梱 fixture に対するテストのみ実行し、実 Vault の検証はローカルで行う。
 
 ## 基盤
 

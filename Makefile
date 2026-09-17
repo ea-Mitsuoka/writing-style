@@ -38,12 +38,12 @@ endif
 test: test-unit test-integration ## Full test suite (unit + integration) — TST-001
 	@bash .claude/hooks/tests/guard-bash.test.sh
 
-test-unit: ## Fast unit suite: inherited foundation tests + tests/ (mirrors src/) — TST-001
+test-unit: ## Fast unit suite: inherited foundation tests + tests/**/unit (no I/O) — TST-001
 	@python3 -m unittest discover -s scripts/tests -p 'test_*.py'
-	@python3 -m unittest discover -s tests -t . -p 'test_*.py'
+	@python3 -m unittest discover -s tests -t . -p 'test_*.py' -k '.unit.'
 
-test-integration: ## Integration suite (may use containers)
-	@echo "[project] test-integration: not applicable — no external integration surface"
+test-integration: ## Integration suite: tests/**/integration (real files in temp dirs) — TST-001
+	@python3 -m unittest discover -s tests -t . -p 'test_*.py' -k '.integration.'
 
 coverage: ## Test with coverage report — TST-003 ratchet
 	@rm -rf coverage
@@ -81,3 +81,12 @@ fleet-audit: ## Audit every configured local inheritance relationship without wr
 	@python3 scripts/template_inheritance.py fleet-audit \
 		--config docs/foundation/inheritance-fleet.json \
 		--workspace-root "$(FLEET_WORKSPACE_ROOT)"
+
+# ---------------------------------------------------------------------------
+# Project extensions (below the canonical contract; profiles/README.md)
+# ---------------------------------------------------------------------------
+
+VAULT ?=
+
+rules-validate: ## Validate the vault's writing rules (30_memory/feedback/ja-*.md); VAULT=<path> overrides $$OBSIDIAN_VAULT_PATH
+	@python3 -m src.modules.rules.interface.cli $(if $(VAULT),--vault "$(VAULT)",)
