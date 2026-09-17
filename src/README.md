@@ -23,13 +23,13 @@ Dependency direction: `interface → application → domain` and
 `infrastructure → application → domain`. Never sideways into another module's
 internals — cross-module calls use the target's MODULE.md public API or events.
 
-## Worked example: `modules/catalog/`
+## Reference shape
 
-[`modules/catalog/`](modules/catalog/MODULE.md) is a small reference module (Python)
-demonstrating the four layers, DDD value objects/aggregates, ports + adapters, and the
-testing conventions. **Imitate its shape** (COD-050); it is not wired into the no-op
-template Makefile. Delete it and `tests/modules/catalog/` when starting a real project.
-Run its tests with the python-uv profile, or ad hoc: `PYTHONPATH=. pytest tests/modules/catalog`.
+The foundation's worked example (`modules/catalog/` in `ea-Mitsuoka/ai-dev-foundation`)
+shows the four layers, value objects, ports + adapters, and the test conventions. It was
+removed from this repository when real modules started (issue #2); read it in the parent
+when a layout question comes up. Tests here use the standard-library `unittest` runner
+through `make test-unit` (`tests/` mirrors `src/`; import modules as `src.modules.<name>...`).
 
 ## MODULE.md template
 

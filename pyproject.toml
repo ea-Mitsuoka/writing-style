@@ -1,0 +1,35 @@
+[project]
+name = "writing-style"
+version = "0.0.0"
+description = "Tooling for the Japanese writing-style improvement loop (extraction, validation, promotion)"
+requires-python = ">=3.11"
+# Runtime code is standard-library only (ARC-002, COD-040). Tooling lives in the dev group.
+dependencies = []
+
+[dependency-groups]
+dev = [
+  # Formatter + linter for src/ and tests/ (COD-001). Exact pin; Renovate proposes bumps.
+  "ruff==0.16.8",
+]
+
+[tool.uv]
+# No build backend: the repository is a set of scripts, not an installable package.
+package = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # bugbear
+  "UP",  # pyupgrade
+]
+
+[tool.ruff.format]
+docstring-code-format = true
