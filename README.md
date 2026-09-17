@@ -1,66 +1,54 @@
-# ai-dev-foundation
+# writing-style
 
-<!-- repository-readme-owner: ea-Mitsuoka/ai-dev-foundation -->
+<!-- repository-readme-owner: ea-Mitsuoka/writing-style -->
 
-**AI-native development foundation** — a template repository for projects where AI
-agents (Claude Code, ChatGPT, Gemini, Codex, ...) are the primary developers and humans
-direct, decide, and review.
+日本語表現ルールの**改善ループを回す仕組み**を置くリポジトリ。AI が書いた日本語への指摘
+（用語の揺れ・不自然な言い回し・過剰な敬語など）を、再発防止のルールとして蓄積・検証・
+配布するためのスクリプトと運用手順を管理する。
 
 > **AI agents:** stop reading this file. Your entry point is [CLAUDE.md](CLAUDE.md)
 > (Claude Code) or [AGENTS.md](AGENTS.md) (everyone else).
 
-## What this template provides
+## このリポジトリが持つもの・持たないもの
 
-| Layer | Location | Purpose |
-|-------|----------|---------|
-| Rules (single source of truth) | [`.ai/`](.ai/) | Guardrails, security, architecture, coding, testing, release, docs, review — every rule has a stable ID (GR-010, SEC-020, ...) |
-| Agent entry | [`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md), [agent profile](.github/inheritance/agent-profile.json) | Thin runtime adapters load the ordered foundation, template, and project instructions |
-| Task playbooks | [`.skills/`](.skills/) | 10 vendor-neutral skills: requirements, feature, bugfix, refactor, architecture, test, security, documentation, review, release — also exposed as native Claude Code skills under `.claude/skills/` |
-| Enforcement L1 | [`.claude/`](.claude/) | Claude Code hooks (command guard + auto format/lint), a read-only command allow-list, native skill wrappers, and a read-only `code-reviewer` subagent |
-| Enforcement L2 | [`.pre-commit-config.yaml`](.pre-commit-config.yaml) | Any committer: secret scan, branch guard, lint, unit tests |
-| Enforcement L3 | [`.github/workflows/`](.github/workflows/) | CI, CodeQL, secrets/deps/license scan, container, IaC, DAST, Scorecard, release+SBOM |
-| Stable command interface | [`Makefile`](Makefile) | `make test` etc. — the only entry points automation uses |
-| Stack profiles | [`profiles/`](profiles/) | Reference Makefile implementations per stack + the canonical target contract |
-| Decisions | [`docs/foundation/adr/`](docs/foundation/adr/) | Synchronized foundation ADRs + decision log |
-| Knowledge | [`docs/`](docs/) | Architecture, domain, API, deployment, operations, runbook, troubleshooting, roadmap, glossary |
-| GitHub scaffolding | [`.github/`](.github/) | Issue forms, PR template, CODEOWNERS, labels-as-code, and Dependabot security settings; version updates use `renovate.json` exclusively |
-| GitHub governance | [`.github/governance/`](.github/governance/) + [`scripts/github_governance.py`](scripts/github_governance.py) | Layered policy with `plan`/`audit` and explicitly confirmed administrator `apply` |
-| Update distribution | [`template-sync.yml`](.github/workflows/template-sync.yml) + [`.templatesyncignore`](.templatesyncignore) | Foundation updates reach downstream repos as PRs |
+| 区分 | 内容 | 置き場所 |
+|------|------|---------|
+| **持つ** | 抽出（指摘の回収）・正規化（ルール化）・検証（書式と適用範囲の必須項目）・昇格（安定したルールを共通 AI 基盤の Skill に変換）を行うスクリプトと手順 | このリポジトリ |
+| **持たない** | ルール本文（用語対訳表・文体規則・構造規則・NG/OK 例） | メモリ Vault [ai-memory](https://github.com/ea-Mitsuoka/ai-memory) の `30_memory/feedback/` |
+| **持たない** | 開発方針（コード規約・レビュー・ワークフロー） | [ai-dev-foundation](https://github.com/ea-Mitsuoka/ai-dev-foundation) の `.ai/` |
 
-## Using this template
+ルール本文をここに置かない理由は、ルールが**人の記憶**（AI 全般に読ませる文脈）であって、
+特定リポジトリの成果物ではないため。Vault は各 AI セッションが起動時に読む正典であり、
+`updated` の日付が「安定性」の判断材料になる。このリポジトリはその正典を**読んで処理する側**。
 
-1. **Create the repo** from this template (GitHub → "Use this template").
-2. **Set project facts**: replace every `{{...}}` placeholder, then update
-   [`.ai/project/agent-overlay.md`](.ai/project/agent-overlay.md) with this repository's
-   identity and stack. In the [agent profile](.github/inheritance/agent-profile.json),
-   keep the foundation input and change the final project input's `repository` value to
-   the new `OWNER/REPOSITORY`.
-3. **Wire the Makefile**: copy the closest [`profiles/`](profiles/) Makefile to the
-   root (or implement `setup/format/lint/test/build` yourself) — everything else
-   (hooks, CI) starts working automatically.
-4. **Inspect GitHub governance**: run `python3 scripts/github_governance.py plan --root .
-   --repo OWNER/REPOSITORY` after `gh auth login`. It reports policy drift without
-   changing settings. Use `audit` for a CI-suitable nonzero drift result. After reviewing
-   the plan, run `apply` with an exact `--confirm-repo OWNER/REPOSITORY`. The existing
-   [`scripts/setup-github.sh`](scripts/setup-github.sh) is a compatibility wrapper for
-   the same policy-driven `plan` and explicitly confirmed `apply` paths.
-5. **Install local gates**: `make setup && pre-commit install --hook-type pre-commit
-   --hook-type pre-push`.
-6. **Point your agent at it**: open the repo with Claude Code (reads the thin
-   `CLAUDE.md` adapter automatically) or tell any other agent to read `AGENTS.md`.
-   The adapter loads the exact ordered files declared by the agent profile. Assign it
-   an issue.
-   Run the agent inside the [Dev Container](.devcontainer/README.md) so host credentials
-   stay out of its reach; customize `.devcontainer/devcontainer.json` for your stack.
+## 改善ループ
 
-Full walkthrough (new machine, different account, gotchas):
-[foundation usage guide](docs/foundation/guides/usage.md).
+```
+抽出 ──▶ ルール化 ──▶ 保存（Vault） ──▶ 検証 ──▶ 昇格（Skill）
+  ▲                                       │
+  └────────── 再発したら具体例を追加 ◀──────┘
+```
 
-## Design principles
+| 段階 | 内容 | 担当 |
+|------|------|------|
+| 抽出 | Claude Code のセッション記録や claude.ai のエクスポートから、表現への指摘を回収する | スクリプト（この repo） |
+| ルール化 | 用語固定・文体規則・構造規則の 3 種に正規化し、**適用範囲**と **NG/OK 例**を必須とする | 人 + AI |
+| 保存 | `30_memory/feedback/` に 1 ルール 1 ファイルで置き、`MEMORY.md` に索引する | Vault の規約に従う |
+| 検証 | 同種の文章生成で同じ指摘が再発しないかを見る。再発したら具体例を追加 | 人 |
+| 昇格 | 直近 2〜3 か月、追記も修正もないルールだけを Skill に変換する | スクリプト（この repo） |
 
-AI First · Secure by Default · Least Privilege · Defense in Depth · Everything as Code
-(docs, policy, infra) · Convention over Configuration · Clean Architecture · DDD ·
-SOLID · Twelve-Factor · GitHub Flow · Conventional Commits · SemVer.
+更新は **Vault → 配布先（Skill / 他ツールのメモリ）の一方向**に固定する。逆流させない。
 
-Why it's built this way: [foundation ADRs](docs/foundation/adr/). How agents behave here:
-[.ai/README.md](.ai/README.md).
+## 状態
+
+初期化直後。スクリプトは未実装で、まず以下を進める。
+
+1. ルールファイルの書式（frontmatter の追加項目: 適用範囲・種別）を Vault の `AGENTS.md` と矛盾しない形で定義する
+2. 書式検証スクリプト（適用範囲・NG/OK 例・出典なし）を実装する
+3. Claude Code セッション記録からの抽出スクリプトを実装する
+
+## 基盤
+
+[ai-dev-foundation](https://github.com/ea-Mitsuoka/ai-dev-foundation) から生成。規約・ガードレール・
+CI・スキルは `.ai/` と `.claude/` に継承されている。継承関係は
+`.github/inheritance/` に記録し、親の更新は Template Sync の PR として届く。

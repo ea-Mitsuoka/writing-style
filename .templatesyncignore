@@ -1,26 +1,44 @@
-# Files the template-sync workflow must NEVER overwrite in downstream repos —
-# everything a project customizes. Rules and skills sync; executable workflows are
-# ported through separately reviewed PRs because the legacy GitHub App lacks Workflows
-# permission (ADR-0007).
-src/**
-tests/**
-docs/**
-profiles/**
-CLAUDE.md
-README.md
-Makefile
-.env.example
-.ai/mission.md
+# Generated from the exact direct-parent inheritance export.
+.ai/architecture.md
+.ai/coding-rules.md
 .ai/decision-log.md
+.ai/mission.md
 .ai/project/**
+.ai/review-checklist.md
+.ai/workflow.md
+.claude/hooks/guard-bash.sh
+.claude/hooks/tests/**
+.claude/settings.json
+.devcontainer/**
+.env.example
 .github/CODEOWNERS
+.github/governance/profiles/**
 .github/governance/repository.json
 .github/inheritance/agent-profile.json
+.github/inheritance/lock.json
+.github/inheritance/manifest.json
 .github/workflows/**
+.gitignore
+.skills/architecture.skill.md
+.skills/documentation.skill.md
+.skills/feature.skill.md
+.skills/refactor.skill.md
+.skills/release.skill.md
+.skills/review.skill.md
+.skills/security.skill.md
+.skills/test.skill.md
 .templatesyncignore
-
-# Foundation-owned documentation is the only synchronized docs namespace. This Action
-# passes entries to `git reset --`, so exclusions use Git pathspec `:!` syntax rather
-# than `.gitignore` negation. Keep them last so broad rules do not re-exclude the files.
 :!docs/foundation/
 :!docs/foundation/**
+CHANGELOG.md
+CLAUDE.md
+Makefile
+README.md
+docs/**
+docs/README.md
+docs/adr/**
+docs/handoff.md
+docs/inheritance/readmes/**
+profiles/**
+src/**
+tests/**
