@@ -11,13 +11,11 @@ Style: **modular monolith, Clean Architecture layers inside each module, boundar
 Domain-Driven Design bounded contexts.** Start as a monolith; extract services only when
 an ADR justifies it.
 
-<!-- TEMPLATE: adjust the stack table when instantiating. The layer rules below are stack-agnostic. -->
-
 | Field | Value |
 |-------|-------|
-| Language / runtime | {{STACK}} |
-| Persistence | {{DATABASE}} |
-| Deployment target | {{DEPLOY_TARGET}} |
+| Language / runtime | Python 3.11+ (standard library only until a dependency is justified per GR-023) |
+| Persistence | None. Rule files are Markdown in the `ea-Mitsuoka/ai-memory` vault (`30_memory/feedback/`), read at run time; this repository stores no rule data. |
+| Deployment target | None. Scripts run as a local CLI and inside GitHub Actions; there is no deployable service. |
 | Architecture docs | `docs/architecture/` |
 
 ## ARC-001: Canonical directory layout
