@@ -1,7 +1,7 @@
 ---
 id: adr-0002
 title: ADR-0002 — 指摘候補の抽出を、記録を読むだけの独立モジュールと人の仕分けで行う
-status: proposed
+status: accepted
 updated: 2026-09-18
 ---
 
@@ -9,9 +9,9 @@ updated: 2026-09-18
 
 | Field | Value |
 | -- | -- |
-| Status | proposed |
+| Status | accepted |
 | Date | 2026-09-18 |
-| Deciders | リポジトリ所有者 |
+| Deciders | リポジトリ所有者（PR #9 のマージで承認、2026-09-18） |
 | Author | Claude Fable 5.1（AI agent） |
 | Supersedes / Superseded by | — |
 

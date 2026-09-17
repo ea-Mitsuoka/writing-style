@@ -90,3 +90,10 @@ VAULT ?=
 
 rules-validate: ## Validate the vault's writing rules (30_memory/feedback/ja-*.md); VAULT=<path> overrides $$OBSIDIAN_VAULT_PATH
 	@python3 -m src.modules.rules.interface.cli $(if $(VAULT),--vault "$(VAULT)",)
+
+PROJECTS_DIR ?=
+SINCE ?=
+OUT ?=
+
+extract-candidates: ## Extract correction candidates from Claude Code transcripts into out/ (SINCE=YYYY-MM-DD OUT=<file> PROJECTS_DIR=<dir>); the report is local-only
+	@python3 -m src.modules.extraction.interface.cli $(if $(PROJECTS_DIR),--projects-dir "$(PROJECTS_DIR)",) $(if $(SINCE),--since "$(SINCE)",) $(if $(OUT),--out "$(OUT)",)
