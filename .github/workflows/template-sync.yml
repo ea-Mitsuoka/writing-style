@@ -5,7 +5,7 @@
 # OPT-IN and safe by default: the job only runs when the repository variable
 # TEMPLATE_SYNC_ENABLED is set to "true". So the template repo itself and any unmodified
 # downstream repo never run it (no spurious scheduled failures). To enable sync in a
-# downstream repo: set variable TEMPLATE_SYNC_ENABLED=true AND replace {{ORG}} below.
+# downstream repo: set variable TEMPLATE_SYNC_ENABLED=true AND replace ea-Mitsuoka below.
 # A private direct parent additionally requires TEMPLATE_SYNC_SOURCE_AUTH=github-app,
 # TEMPLATE_SYNC_SOURCE_APP_CLIENT_ID, and TEMPLATE_SYNC_SOURCE_APP_PRIVATE_KEY.
 name: Template Sync
@@ -74,7 +74,7 @@ jobs:
           SOURCE_AUTH: ${{ vars.TEMPLATE_SYNC_SOURCE_AUTH || 'public' }}
           HAS_SOURCE_APP_CLIENT_ID: ${{ vars.TEMPLATE_SYNC_SOURCE_APP_CLIENT_ID != '' }}
           HAS_SOURCE_APP_PRIVATE_KEY: ${{ secrets.TEMPLATE_SYNC_SOURCE_APP_PRIVATE_KEY != '' }}
-          SOURCE_REPOSITORY: "{{ORG}}/ai-dev-foundation"
+          SOURCE_REPOSITORY: "ea-Mitsuoka/ai-dev-foundation"
         run: |
           set -euo pipefail
           source_auth="$(python3 scripts/template_sync_auth.py \
@@ -100,10 +100,10 @@ jobs:
         if: steps.sync-preflight.outputs.should_sync == 'true'
         id: template-sync
         with:
-          # TEMPLATE: replace {{ORG}} with the org/user that owns the template repo.
+          # TEMPLATE: replace ea-Mitsuoka with the org/user that owns the template repo.
           source_gh_token: ${{ steps.source-app-token.outputs.token || github.token }}
           target_gh_token: ${{ github.token }}
-          source_repo_path: "{{ORG}}/ai-dev-foundation"
+          source_repo_path: "ea-Mitsuoka/ai-dev-foundation"
           upstream_branch: main
           pr_title: "build: sync with ai-dev-foundation template"
           pr_body: >-
@@ -120,7 +120,7 @@ jobs:
           GH_TOKEN: ${{ steps.source-app-token.outputs.token || github.token }}
           PR_BRANCH: ${{ steps.template-sync.outputs.pr_branch }}
           SOURCE_SHORT: ${{ steps.template-sync.outputs.template_git_hash }}
-          SOURCE_REPOSITORY: "{{ORG}}/ai-dev-foundation"
+          SOURCE_REPOSITORY: "ea-Mitsuoka/ai-dev-foundation"
         run: |
           set -euo pipefail
           if [[ -z "$SOURCE_SHORT" ]]; then
@@ -144,7 +144,7 @@ jobs:
           PR_NUMBER: ${{ steps.template-sync.outputs.pr_number }}
           PR_BRANCH: ${{ steps.template-sync.outputs.pr_branch }}
           SOURCE_COMMIT: ${{ steps.source-provenance.outputs.commit }}
-          SOURCE_REPOSITORY: "{{ORG}}/ai-dev-foundation"
+          SOURCE_REPOSITORY: "ea-Mitsuoka/ai-dev-foundation"
         run: |
           set -euo pipefail
           if [[ -z "$PR_NUMBER" ]]; then
