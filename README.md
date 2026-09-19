@@ -45,7 +45,7 @@
 | -- | -- |
 | ルールファイルの書式（frontmatter の `kind` / `scope`、本文の順序） | 定義済み。Vault の `AGENTS.md`「表現ルール」節と `rule-atom` 雛形 |
 | 書式検証（`src/modules/rules`、[ADR-0001](docs/adr/0001-validate-writing-rules-from-the-memory-vault.md)） | 実装済み。`make rules-validate`（`$OBSIDIAN_VAULT_PATH` または `VAULT=<path>`）で実 Vault を検査する。要件は [docs/requirements.md](docs/requirements.md) |
-| Claude Code セッション記録からの指摘抽出（`src/modules/extraction`、[ADR-0002](docs/adr/0002-extract-correction-candidates-from-claude-code-transcripts.md)） | 実装済み。`make extract-candidates`（`SINCE=` / `OUT=` / `PROJECTS_DIR=`）が候補一覧を `out/` に書く。**一覧は人名・案件名を含むため commit しない。** 仕分け手順は [docs/requirements/extraction.md](docs/requirements/extraction.md) §4.1 |
+| Claude Code セッション記録からの指摘抽出（`src/modules/extraction`、[ADR-0002](docs/adr/0002-extract-correction-candidates-from-claude-code-transcripts.md)） | 実装済み。`make extract-candidates`（`SINCE=` / `MIN_SCORE=` / `OUT=` / `PROJECTS_DIR=`）が候補一覧を `out/` に書く。**一覧は人名・案件名を含むため commit しない。** 仕分けからルール保存までの手順書は [docs/runbook/triage-correction-candidates.md](docs/runbook/triage-correction-candidates.md) |
 | 安定判定と Skill への昇格 | 未着手（別 issue で要件化） |
 
 検証の出力は 1 件 1 行 `相対パス:要件コード:メッセージ`（終了コード 0 = 違反なし、1 = 違反あり、

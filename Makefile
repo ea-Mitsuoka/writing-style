@@ -93,7 +93,8 @@ rules-validate: ## Validate the vault's writing rules (30_memory/feedback/ja-*.m
 
 PROJECTS_DIR ?=
 SINCE ?=
+MIN_SCORE ?=
 OUT ?=
 
-extract-candidates: ## Extract correction candidates from Claude Code transcripts into out/ (SINCE=YYYY-MM-DD OUT=<file> PROJECTS_DIR=<dir>); the report is local-only
-	@python3 -m src.modules.extraction.interface.cli $(if $(PROJECTS_DIR),--projects-dir "$(PROJECTS_DIR)",) $(if $(SINCE),--since "$(SINCE)",) $(if $(OUT),--out "$(OUT)",)
+extract-candidates: ## Extract correction candidates from Claude Code transcripts into out/ (SINCE=YYYY-MM-DD MIN_SCORE=N OUT=<file> PROJECTS_DIR=<dir>); the report is local-only
+	@python3 -m src.modules.extraction.interface.cli $(if $(PROJECTS_DIR),--projects-dir "$(PROJECTS_DIR)",) $(if $(SINCE),--since "$(SINCE)",) $(if $(MIN_SCORE),--min-score "$(MIN_SCORE)",) $(if $(OUT),--out "$(OUT)",)
