@@ -109,6 +109,48 @@ class TestHappyPath(CliCase):
         self.assertIn("0 candidate(s)", out)
 
 
+class TestNoiseFromRealTranscripts(CliCase):
+    """End-to-end cover for #12 over a fixture shaped like the real directory."""
+
+    def write_session(self, project: str, session: str, records: list[dict]) -> None:
+        directory = self.projects / project
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / f"{session}.jsonl").write_text(
+            "\n".join(json.dumps(r, ensure_ascii=False) for r in records) + "\n", encoding="utf-8"
+        )
+
+    def test_continuation_summary_is_absent_and_a_replayed_turn_appears_once(self) -> None:
+        summary = {
+            "type": "user",
+            "timestamp": "2026-09-17T09:00:00Z",
+            "message": {
+                "role": "user",
+                "content": (
+                    "This session is being continued from a previous conversation that ran "
+                    "out of context.\n\nSummary:\n「表現が不自然」「言い回しがわかりづらい」"
+                ),
+            },
+        }
+        replayed = {
+            "type": "user",
+            "timestamp": "2026-09-17T10:01:00Z",
+            "message": {"role": "user", "content": "この言い回しが不自然。"},
+        }
+        # s1 in project p already holds `replayed`; a resumed session and a renamed
+        # project directory keep their own copies of it.
+        self.write_session("p", "s2", [summary, replayed])
+        self.write_session("p-renamed", "s3", [replayed])
+
+        out_file = self.root / "o.md"
+        code, out, _ = self.run_cli(["--projects-dir", str(self.projects), "--out", str(out_file)])
+
+        self.assertEqual(0, code)
+        self.assertIn("1 candidate(s)", out)
+        report = out_file.read_text(encoding="utf-8")
+        self.assertNotIn("This session is being continued", report)
+        self.assertIn("`s1`（同一発話: `s2`, `s3`）", report)
+
+
 class TestUsageErrors(CliCase):
     def test_existing_out_file_is_not_overwritten(self) -> None:
         out_file = self.root / "o.md"
