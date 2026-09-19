@@ -70,7 +70,7 @@ updated: 2026-09-18
 
 抽出の出力（候補一覧 `out/candidates-<YYYYMMDD>.md`）は、次の 3 段階を経て Vault の表現ルールになる。
 役割の分担だけをここに定め、操作手順（コマンド・AI への指示文・各手順の期待結果と失敗時の対処）は
-[docs/runbook/triage-correction-candidates.md](../runbook/triage-correction-candidates.md) が持つ。
+[docs/runbook/update-writing-rules.md](../runbook/update-writing-rules.md) が持つ。
 
 | 段階 | 行う者 | 内容 |
 | -- | -- | -- |

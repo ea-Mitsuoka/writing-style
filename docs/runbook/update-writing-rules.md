@@ -1,10 +1,10 @@
 ---
-id: runbook-triage-correction-candidates
-title: 候補の仕分けとルール化
+id: runbook-update-writing-rules
+title: 表現ルールの更新
 severity: ticket
 ---
 
-# 候補の仕分けとルール化
+# 表現ルールの更新
 
 `make extract-candidates` が出した候補一覧から日本語表現への指摘を選び、Vault に表現ルールとして
 保存するまでの手順。月 1 回、または指摘が溜まったときに行う。放置すると同じ修正を毎セッション

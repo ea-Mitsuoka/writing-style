@@ -61,7 +61,7 @@ Option 3 を採用する。
 
 - 抽出は `src/modules/extraction/` に置く。`rules` とは独立し、互いの内部を import しない。
 - スクリプトの責務は「候補一覧の生成」まで。指摘か否かの最終判定とルール化は、人と AI が行う。役割分担は
-  `docs/requirements/extraction.md` §4.1、操作手順は `docs/runbook/triage-correction-candidates.md`。
+  `docs/requirements/extraction.md` §4.1、操作手順は `docs/runbook/update-writing-rules.md`。
 - 記録には書き込まない。出力は `--out`（既定 `out/`、gitignore 済み）の 1 ファイルのみ。
   標準出力に抜粋を出さない。
 - スコアは語句の重み付け（`#表現` 最優先、強・弱キーワード）で、値と条件は要件定義に書き、
