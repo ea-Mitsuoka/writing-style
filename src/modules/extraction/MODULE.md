@@ -17,8 +17,9 @@ weighting, and render a Markdown list for human and AI triage. It reads only; it
 | -- | -- | -- |
 | `score_turn(turn) -> Candidate \| None` | domain | Score one `HumanTurn` per FR-106; None when not Japanese or score 0 |
 | `rank(candidates) -> tuple[Candidate, ...]` | domain | Score descending, timestamp descending, undated last (FR-107) |
+| `deduplicate(candidates) -> tuple[Candidate, ...]` | domain | Merge candidates sharing text and timestamp, keep the first, record the other sessions in `Candidate.duplicate_sessions` (FR-114) |
 | `render_report(candidates, stats, *, generated_at, projects_dir, since, min_score) -> str` | domain | Markdown per FR-110 (400 / 200-character excerpts) |
-| `ExtractCandidates(source).handle(since, min_score) -> Extraction` | application | Scan through a `TranscriptSource`, score, filter, rank; returns candidates and `ScanStats` |
+| `ExtractCandidates(source).handle(since, min_score) -> Extraction` | application | Scan through a `TranscriptSource`, score, filter, deduplicate, rank; returns candidates and `ScanStats` |
 | `TranscriptSource` / `ScanResult` | application | Port an adapter implements: format-neutral `HumanTurn`s plus statistics |
 | `TAG`, `STRONG_KEYWORDS`, `WEAK_KEYWORDS` and their scores | domain | The vocabulary and weights, copied once from `docs/requirements/extraction.md` FR-106 |
 
@@ -35,10 +36,12 @@ None. Transcripts belong to Claude Code; the candidate report belongs to the own
 
 ## Invariants (MUST always hold — each maps to a test)
 
-1. A turn without Japanese, or with score 0, is never a candidate.
+1. A turn without Japanese, with score 0, or beginning with the harness continuation
+   summary, is never a candidate.
 2. Each keyword kind counts once per turn; weak keywords count only when the turn is at
    most 200 characters.
 3. Ranking is total and deterministic: score desc, then timestamp desc, undated last.
+   Candidates sharing text and timestamp appear once, keeping the first one scanned.
 4. The rendered report is a pure function of its inputs (same input, same text).
 5. `domain/` and `application/` import only the standard library and never the `rules`
    module.

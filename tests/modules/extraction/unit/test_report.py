@@ -7,6 +7,7 @@ per-candidate fields, 400/200-character excerpts, 「不明」 for a missing dat
 from __future__ import annotations
 
 import unittest
+from dataclasses import replace
 
 from src.modules.extraction.domain.candidate import ScanStats, score_turn
 from src.modules.extraction.domain.report import render_report
@@ -26,6 +27,18 @@ def candidate(text: str = "この言い回しがわかりづらい。", **turn_o
     result = score_turn(turn(text, **turn_overrides))
     assert result is not None
     return result
+
+
+class TestDuplicateSessions(unittest.TestCase):
+    def test_sessions_that_replayed_the_turn_are_listed_beside_the_session(self) -> None:
+        merged = replace(candidate(), duplicate_sessions=("session-b", "session-c"))
+        report = render_report([merged], STATS, **HEADER)
+        self.assertIn("`session-a`（同一発話: `session-b`, `session-c`）", report)
+
+    def test_a_candidate_without_duplicates_shows_the_session_alone(self) -> None:
+        report = render_report([candidate()], STATS, **HEADER)
+        self.assertIn("- セッション: `session-a`\n", report)
+        self.assertNotIn("同一発話", report)
 
 
 class TestHeader(unittest.TestCase):

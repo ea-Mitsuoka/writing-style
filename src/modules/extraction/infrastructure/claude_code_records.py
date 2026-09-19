@@ -15,6 +15,12 @@ from typing import Any
 # echoes (<command-name>…</command-name>) are not the human's words (FR-103).
 _EMBEDDED_BLOCK = re.compile(r"<([a-z][a-z0-9-]*)>.*?</\1>", re.S)
 
+# When a session runs out of context the harness writes its summary of the earlier turns
+# as a user record. It quotes the corrections it summarizes, so it scores high while
+# containing nothing new; only a turn that *starts* with this wording is the summary
+# itself (FR-102).
+_CONTINUATION_SUMMARY_PREFIX = "This session is being continued from a previous conversation"
+
 
 def human_text(record: dict[str, Any]) -> str | None:
     """The human's own text for a user record, or None when the record is not a human turn."""
@@ -33,7 +39,9 @@ def human_text(record: dict[str, Any]) -> str | None:
     else:
         return None
     cleaned = _EMBEDDED_BLOCK.sub("", text).strip()
-    return cleaned or None
+    if not cleaned or cleaned.startswith(_CONTINUATION_SUMMARY_PREFIX):
+        return None
+    return cleaned
 
 
 def assistant_text(record: dict[str, Any]) -> str | None:

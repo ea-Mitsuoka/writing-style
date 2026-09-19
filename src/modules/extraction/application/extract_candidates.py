@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from ..domain.candidate import Candidate, ScanStats, rank, score_turn
+from ..domain.candidate import Candidate, ScanStats, deduplicate, rank, score_turn
 from .ports import TranscriptSource
 
 
@@ -28,4 +28,4 @@ class ExtractCandidates:
         result = self._source.scan(since)
         scored = (score_turn(turn) for turn in result.turns)
         kept = [c for c in scored if c is not None and c.score >= min_score]
-        return Extraction(rank(kept), result.stats)
+        return Extraction(rank(deduplicate(kept)), result.stats)

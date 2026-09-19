@@ -68,6 +68,27 @@ class TestHumanText(unittest.TestCase):
     def test_record_without_message_is_skipped(self) -> None:
         self.assertIsNone(human_text({"type": "user"}))
 
+    def test_harness_continuation_summary_is_not_a_human_turn(self) -> None:
+        # The harness writes the summary of a context-exhausted session as a user record;
+        # it quotes the earlier turns, so it scores high while saying nothing new (#12).
+        text = (
+            "This session is being continued from a previous conversation that ran out "
+            "of context. The summary below covers the earlier portion of the conversation.\n"
+            "\nSummary:\n1. Primary Request and Intent:\n   「表現が不自然」と指摘された。"
+        )
+        self.assertIsNone(human_text(user_record(text)))
+
+    def test_continuation_summary_after_an_embedded_block_is_still_skipped(self) -> None:
+        text = (
+            "<system-reminder>note</system-reminder>\n"
+            "This session is being continued from a previous conversation. 表現が不自然。"
+        )
+        self.assertIsNone(human_text(user_record(text)))
+
+    def test_turn_that_merely_mentions_the_continuation_wording_is_kept(self) -> None:
+        text = "ログに This session is being continued from a previous conversation と出る理由は？"
+        self.assertEqual(text, human_text(user_record(text)))
+
 
 class TestAssistantText(unittest.TestCase):
     def test_text_blocks_are_joined_and_other_blocks_ignored(self) -> None:

@@ -56,7 +56,7 @@ def _candidate_section(index: int, candidate: Candidate) -> list[str]:
     return [
         f"## {index}. スコア {candidate.score} — {date} — {turn.project}",
         "",
-        f"- セッション: `{turn.session_id}`",
+        f"- セッション: {_sessions(candidate)}",
         f"- キーワード: {', '.join(candidate.keywords)}",
         "",
         "### 発話",
@@ -68,6 +68,15 @@ def _candidate_section(index: int, candidate: Candidate) -> list[str]:
         _quote(assistant) if assistant else NO_ASSISTANT_TEXT,
         "",
     ]
+
+
+def _sessions(candidate: Candidate) -> str:
+    """The session that kept the turn, plus the sessions that replayed it (FR-114)."""
+    session = f"`{candidate.turn.session_id}`"
+    if not candidate.duplicate_sessions:
+        return session
+    others = ", ".join(f"`{s}`" for s in candidate.duplicate_sessions)
+    return f"{session}（同一発話: {others}）"
 
 
 def _excerpt(text: str, limit: int) -> str:

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 TAG = "#表現"
 TAG_SCORE = 10
@@ -47,6 +47,8 @@ class Candidate:
     turn: HumanTurn
     score: int
     keywords: tuple[str, ...]
+    # Sessions that replayed the same turn, in encounter order; empty when seen once.
+    duplicate_sessions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -81,6 +83,32 @@ def score_turn(turn: HumanTurn) -> Candidate | None:
     if score == 0:
         return None
     return Candidate(turn, score, tuple(keywords))
+
+
+def deduplicate(candidates: Iterable[Candidate]) -> tuple[Candidate, ...]:
+    """Merge candidates that share text and timestamp, keeping the first one (FR-114).
+
+    A resumed session replays the earlier records into a new session file, and a renamed
+    project directory keeps a second copy of them, so the same turn reaches us several
+    times. Project is deliberately not part of the key: the same text at the same instant
+    in two directories is the same utterance.
+    """
+    merged: dict[tuple[str, str | None], Candidate] = {}
+    others: dict[tuple[str, str | None], list[str]] = {}
+    for candidate in candidates:
+        key = (candidate.turn.text, candidate.turn.timestamp)
+        kept = merged.get(key)
+        if kept is None:
+            merged[key] = candidate
+            others[key] = []
+            continue
+        session = candidate.turn.session_id
+        if session != kept.turn.session_id and session not in others[key]:
+            others[key].append(session)
+    return tuple(
+        replace(candidate, duplicate_sessions=tuple(others[key]))
+        for key, candidate in merged.items()
+    )
 
 
 def rank(candidates: Iterable[Candidate]) -> tuple[Candidate, ...]:
