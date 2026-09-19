@@ -52,5 +52,63 @@ class TestExtractCandidates(unittest.TestCase):
         self.assertEqual((), extraction.candidates)
 
 
+class TestDuplicateTurns(unittest.TestCase):
+    """Resumed sessions and renamed project directories replay the same turn (#12)."""
+
+    def test_same_text_and_timestamp_is_reported_once_with_the_other_sessions(self) -> None:
+        source = FakeTranscriptSource(
+            [
+                turn("不自然。", session_id="session-a"),
+                turn("不自然。", session_id="session-b"),
+                turn("不自然。", session_id="session-c", project="-Users-me-Project-renamed"),
+            ]
+        )
+        extraction = ExtractCandidates(source).handle(since=None, min_score=1)
+        self.assertEqual(1, len(extraction.candidates))
+        kept = extraction.candidates[0]
+        self.assertEqual("session-a", kept.turn.session_id)
+        self.assertEqual(("session-b", "session-c"), kept.duplicate_sessions)
+
+    def test_a_repeated_session_id_is_listed_once(self) -> None:
+        source = FakeTranscriptSource(
+            [turn("不自然。", session_id="session-a"), turn("不自然。", session_id="session-b")] * 2
+        )
+        extraction = ExtractCandidates(source).handle(since=None, min_score=1)
+        self.assertEqual(("session-b",), extraction.candidates[0].duplicate_sessions)
+
+    def test_same_text_at_different_times_stays_separate(self) -> None:
+        source = FakeTranscriptSource(
+            [
+                turn("不自然。", timestamp="2026-09-18T00:00:00Z"),
+                turn("不自然。", timestamp="2026-09-17T00:00:00Z"),
+            ]
+        )
+        extraction = ExtractCandidates(source).handle(since=None, min_score=1)
+        self.assertEqual(2, len(extraction.candidates))
+        self.assertEqual([(), ()], [c.duplicate_sessions for c in extraction.candidates])
+
+    def test_different_text_at_the_same_time_stays_separate(self) -> None:
+        source = FakeTranscriptSource([turn("不自然。"), turn("この言い回しは不自然。")])
+        extraction = ExtractCandidates(source).handle(since=None, min_score=1)
+        self.assertEqual(2, len(extraction.candidates))
+
+    def test_undated_duplicates_are_merged(self) -> None:
+        source = FakeTranscriptSource(
+            [
+                turn("不自然。", timestamp=None, session_id="session-a"),
+                turn("不自然。", timestamp=None, session_id="session-b"),
+            ]
+        )
+        extraction = ExtractCandidates(source).handle(since=None, min_score=1)
+        self.assertEqual(1, len(extraction.candidates))
+        self.assertEqual(("session-b",), extraction.candidates[0].duplicate_sessions)
+
+    def test_a_turn_seen_once_records_no_duplicate_sessions(self) -> None:
+        extraction = ExtractCandidates(FakeTranscriptSource([turn("不自然。")])).handle(
+            since=None, min_score=1
+        )
+        self.assertEqual((), extraction.candidates[0].duplicate_sessions)
+
+
 if __name__ == "__main__":
     unittest.main()
