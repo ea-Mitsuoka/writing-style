@@ -74,7 +74,7 @@ cd ~/Project/writing-style && make extract-candidates SINCE=<前回の実施日>
 次回また候補に出る。
 
 - 元の候補が、AI の日本語に対する自分の修正要求である。作業指示や仕様変更ではない
-- `scope` が、そのルールの効く文書種別だけになっている
+- `scope` が、そのルールを適用する文書種別だけになっている
 - `## NG / OK` に案件名・人名・顧客名・社名が無い
 - `~/ai-memory/MEMORY.md` の `## feedback` に同じ趣旨のルールが無い。あれば新規にせず、
   既存ファイルの `## NG / OK` に例を追加して `updated` を更新する
