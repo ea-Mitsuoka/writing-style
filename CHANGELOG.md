@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.0 (2026-09-23)
+
+
+### Features
+
+* **extraction:** Claude Code 記録リーダー・CLI・make extract-candidates ([#11](https://github.com/ea-Mitsuoka/writing-style/issues/11)) ([d3fb106](https://github.com/ea-Mitsuoka/writing-style/commit/d3fb1062f08e23c09c5175cbdf0ed965d1c2f4d3))
+* **extraction:** 候補のスコア付け・順位付け・一覧レンダリング（domain / application） ([#10](https://github.com/ea-Mitsuoka/writing-style/issues/10)) ([c0f6b5f](https://github.com/ea-Mitsuoka/writing-style/commit/c0f6b5f1f09f05cebd1796ec6787735d99c43c3e))
+* **rules:** filesystem 供給源・CLI・make rules-validate ([#7](https://github.com/ea-Mitsuoka/writing-style/issues/7)) ([9792de7](https://github.com/ea-Mitsuoka/writing-style/commit/9792de7bc55554a2a1fe13e86f3bc411bce40847))
+* **rules:** 表現ルールの書式検査（domain / application） ([#6](https://github.com/ea-Mitsuoka/writing-style/issues/6)) ([8493a87](https://github.com/ea-Mitsuoka/writing-style/commit/8493a872b5a398cf800c41d9e164e083d2c44db6))
+
 ## [2.3.1](https://github.com/ea-Mitsuoka/ai-dev-foundation/compare/v2.3.0...v2.3.1) (2026-09-02)
 
 
