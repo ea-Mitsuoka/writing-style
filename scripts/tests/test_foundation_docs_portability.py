@@ -53,15 +53,27 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
                     offenders.append(f"{document.relative_to(REPOSITORY_ROOT)} -> {relative}")
         self.assertEqual(offenders, [])
 
-    def test_agent_entry_routes_to_the_inherited_make_target_contract(self):
+    def test_agent_entry_routes_to_the_inherited_task_target_contract(self):
         entry = (REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "agent-entry.md").read_text(
             encoding="utf-8"
         )
-        contract = REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "make-targets.md"
+        contract = REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "task-targets.md"
 
         self.assertTrue(contract.is_file())
-        self.assertIn(".ai/contracts/foundation/make-targets.md", entry)
+        self.assertIn(".ai/contracts/foundation/task-targets.md", entry)
+        self.assertNotIn(".ai/contracts/foundation/make-targets.md", entry)
         self.assertNotIn("profiles/README.md", entry)
+
+    def test_moved_make_target_contract_holds_only_a_pointer(self):
+        # ADR-0026: one contract body; the old path stays until the contract phase so that
+        # links in descendants keep resolving, but it carries no rules of its own.
+        pointer = (
+            REPOSITORY_ROOT / ".ai" / "contracts" / "foundation" / "make-targets.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("(task-targets.md)", pointer)
+        self.assertNotIn("| `lint` |", pointer)
+        self.assertNotIn("## Implementation rules", pointer)
 
     def test_root_check_does_not_classify_legacy_children_by_manifest_absence(self):
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
@@ -78,10 +90,12 @@ class FoundationDocsPortabilityTest(unittest.TestCase):
             script,
         )
 
-    def test_child_doctor_rejects_unresolved_makefile_profiles(self):
+    def test_child_doctor_rejects_unresolved_target_profiles(self):
+        # Which validator runs is pinned by test_taskfile_profile.DoctorProfileSelectionTest.
         script = TEMPLATE_CHECK.read_text(encoding="utf-8")
 
-        self.assertIn("python3 scripts/makefile_profile.py", script)
+        self.assertIn("scripts/taskfile_profile.py", script)
+        self.assertIn("scripts/makefile_profile.py", script)
         self.assertIn("--allow-template-placeholders", script)
         self.assertIn("repository-readme-owner: ea-Mitsuoka/ai-dev-foundation", script)
 
