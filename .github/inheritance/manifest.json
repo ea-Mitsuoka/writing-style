@@ -73,6 +73,7 @@
     "CLAUDE.md",
     "Makefile",
     "README.md",
+    "Taskfile.yml",
     "profiles/",
     "src/",
     "tests/",
