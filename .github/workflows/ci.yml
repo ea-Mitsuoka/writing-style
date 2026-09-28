@@ -91,9 +91,17 @@ jobs:
           FILES: ${{ github.event.pull_request.changed_files }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          TARGET_REPOSITORY: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" > "${RUNNER_TEMP}/pr-files.json"
-          python3 scripts/pr_size_policy.py --files-json "${RUNNER_TEMP}/pr-files.json" --additions "${ADDITIONS}" --deletions "${DELETIONS}" --files "${FILES}"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""' > "${RUNNER_TEMP}/pr-current-body.md"
+          policy_status=0
+          python3 scripts/pr_size_policy.py --files-json "${RUNNER_TEMP}/pr-files.json" --additions "${ADDITIONS}" --deletions "${DELETIONS}" --files "${FILES}" || policy_status=$?
+          python3 src/ci/template_sync_size_exception.py --policy-status "${policy_status}" --pr-author "${PR_AUTHOR}" --head-repository "${HEAD_REPOSITORY}" --target-repository "${TARGET_REPOSITORY}" --head-ref "${HEAD_REF}" --base-ref "${BASE_REF}" --pr-body-file "${RUNNER_TEMP}/pr-current-body.md"
       - name: PR body language (ADR-0020)
         # The body travels through the environment, never through shell interpolation.
         env:
