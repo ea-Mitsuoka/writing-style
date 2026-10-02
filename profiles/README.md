@@ -5,7 +5,7 @@ title: Makefile Profiles — Canonical Command Contract
 
 # profiles/ — Makefile Reference Implementations
 
-The root [Makefile](../Makefile) ships as no-op placeholders. A **profile** is a
+The root [Taskfile.yml](../Taskfile.yml) implements the canonical tasks (ADR-0026). A **profile** is a
 reference implementation for a concrete stack: copy the profile's Makefile to the repo
 root, adjust paths, delete the placeholders — hooks, pre-commit, and CI start working
 unchanged.
@@ -17,7 +17,7 @@ implement them (or leave an honest no-op with a message); project-specific targe
 be added freely below them.
 
 | Target | Semantics | Mutates files? | Called by |
-|--------|-----------|----------------|-----------|
+| -- | -- | -- | -- |
 | `setup` | install toolchain, plugins, git hooks — idempotent | env only | CI (every job), humans |
 | `format` | auto-format; honors optional `FILE=<path>` | **yes** | post-edit hook |
 | `lint` | **check-only**, zero warnings (COD-001); never fixes | **never** | post-edit hook, pre-commit, CI |
@@ -54,7 +54,7 @@ be added freely below them.
 ## Available profiles
 
 | Profile | Stack | Source |
-|---------|-------|--------|
+| -- | -- | -- |
 | [terraform-gcp/](terraform-gcp/) | Terraform (GCP foundations, layered), Python tooling via uv, OPA policies, Excel SSoT generator | adapted 2026-07-02 from a production foundations project |
 | [typescript-node/](typescript-node/) | Node.js + pnpm + Prettier + ESLint + tsc + Vitest | authored 2026-07-02 |
 | [python-uv/](python-uv/) | Python + uv + Ruff + mypy + pytest | authored 2026-07-02 |
