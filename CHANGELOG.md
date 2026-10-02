@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/ea-Mitsuoka/writing-style/compare/v1.0.0...v2.0.0) (2026-10-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace the Makefile with a Taskfile (ADR-0026) ([#32](https://github.com/ea-Mitsuoka/writing-style/issues/32))
+
+### Features
+
+* replace the Makefile with a Taskfile (ADR-0026) ([#32](https://github.com/ea-Mitsuoka/writing-style/issues/32)) ([90b6a00](https://github.com/ea-Mitsuoka/writing-style/commit/90b6a0043f3d0c6f90011d636a28cba954cbb097))
+
 ## 1.0.0 (2026-09-23)
 
 
