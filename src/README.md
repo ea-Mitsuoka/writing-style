@@ -29,7 +29,7 @@ The foundation's worked example (`modules/catalog/` in `ea-Mitsuoka/ai-dev-found
 shows the four layers, value objects, ports + adapters, and the test conventions. It was
 removed from this repository when real modules started (issue #2); read it in the parent
 when a layout question comes up. Tests here use the standard-library `unittest` runner
-through `make test-unit` (`tests/` mirrors `src/`; import modules as `src.modules.<name>...`).
+through `task test-unit` (`tests/` mirrors `src/`; import modules as `src.modules.<name>...`).
 
 ## MODULE.md template
 

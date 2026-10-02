@@ -74,7 +74,7 @@ updated: 2026-09-18
 
 ### 4.1 利用シナリオ
 
-1. 所有者または AI がルールを Vault に書く → `make rules-validate` を実行 → 結果 0 件なら
+1. 所有者または AI がルールを Vault に書く → `task rules-validate` を実行 → 結果 0 件なら
    Vault にコミットする。
 2. 結果がある場合、`パス:コード:メッセージ` を読んでファイルを直し、再実行する。
 
@@ -103,10 +103,10 @@ updated: 2026-09-18
 
 | ID | 特性（ISO/IEC 25010） | 要件 | 目標 | 測定方法 | 優先度 |
 | -- | -- | -- | -- | -- | -- |
-| NFR-001 | 性能効率性 | ルール 100 件の検証 | 1 秒以内 | ローカルで `time make rules-validate` | Should |
+| NFR-001 | 性能効率性 | ルール 100 件の検証 | 1 秒以内 | ローカルで `time task rules-validate` | Should |
 | NFR-002 | 信頼性 | 決定的であること | 同じ入力に同じ出力 | 単体テストが乱数・時刻・ネットワークに依存しない（TST-010） | Must |
 | NFR-003 | セキュリティ | Vault に書き込まない。ファイル内容をログや例外に丸ごと出さない | 書き込み API を持たない | コードレビュー、`infrastructure` の API 表面 | Must |
-| NFR-004 | 保守性 | 4 層構成と依存方向（ARC-001/002）。`domain` / `application` の行カバレッジ | 80 % 以上 | `make coverage` | Must |
+| NFR-004 | 保守性 | 4 層構成と依存方向（ARC-001/002）。`domain` / `application` の行カバレッジ | 80 % 以上 | `task coverage` | Must |
 | NFR-007 | 移植性 | 標準ライブラリのみ、Python 3.11 以上 | 追加依存 0 | `pyproject.toml` の `dependencies = []` | Must |
 
 ## 6. データ要件
@@ -146,8 +146,8 @@ updated: 2026-09-18
 | AC-1 | FR-002〜FR-010 のそれぞれについて、違反 fixture が該当コードで検出され、適合 fixture では検出されない | FR-002〜010 | 単体テスト（要件ごとに違反・適合の対） |
 | AC-2 | Vault の試作ルール `ja-term-gc-iam-roles.md` を写した fixture で結果が 0 件 | FR-001〜010 | 単体テスト |
 | AC-3 | `--vault` 省略・`OBSIDIAN_VAULT_PATH` 未設定で終了コード 2、結果ありで 1、なしで 0 | FR-011, FR-012 | 単体テスト（CLI を関数として呼ぶ） |
-| AC-4 | `make rules-validate` が実 Vault に対して動く | FR-011, A-2 | 所有者のローカル実行（PR に結果を記載） |
-| AC-5 | `domain` / `application` の行カバレッジ 80 % 以上 | NFR-004 | `make coverage` |
+| AC-4 | `task rules-validate` が実 Vault に対して動く | FR-011, A-2 | 所有者のローカル実行（PR に結果を記載） |
+| AC-5 | `domain` / `application` の行カバレッジ 80 % 以上 | NFR-004 | `task coverage` |
 
 ## 11. リスク
 

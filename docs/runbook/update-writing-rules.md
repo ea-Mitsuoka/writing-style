@@ -7,7 +7,7 @@ last-verified: 2026-09-20
 
 # 表現ルールの更新
 
-`make extract-candidates` が出した候補一覧から日本語表現への指摘を選び、Vault に表現ルールとして
+`task extract-candidates` が出した候補一覧から日本語表現への指摘を選び、Vault に表現ルールとして
 保存するまでの手順。月 1 回、または指摘が溜まったときに行う。放置すると同じ修正を毎セッション
 繰り返す。
 
@@ -28,7 +28,7 @@ last-verified: 2026-09-20
 
 ```bash
 cd ~/ai-memory && git pull && git status --short
-cd ~/Project/writing-style && make extract-candidates SINCE=<前回の実施日>
+cd ~/Project/writing-style && task extract-candidates SINCE=<前回の実施日>
 ```
 
 1 行目で Vault に未 commit の変更が無いことを確かめる（あれば先に片付ける）。2 行目が
@@ -99,7 +99,7 @@ AI に次を指示するか、自分で書く。
 ### 5. 書式を検証して commit する
 
 ```bash
-cd ~/Project/writing-style && make rules-validate
+cd ~/Project/writing-style && task rules-validate
 cd ~/ai-memory && python3 scripts/validate_vault.py && git add -A && git commit -m "feedback: 表現ルールを追加" && git push
 ```
 
@@ -108,7 +108,7 @@ cd ~/ai-memory && python3 scripts/validate_vault.py && git add -A && git commit 
 | 出力 | 対処 |
 | -- | -- |
 | `<ファイル>:FR-0xx:<メッセージ>`（終了コード 1） | 書式違反。コードの意味は [docs/requirements.md](../requirements.md) §4。直して再実行 |
-| `error: no vault path`（終了コード 2） | `OBSIDIAN_VAULT_PATH` が未設定。`make rules-validate VAULT=~/ai-memory` で実行 |
+| `error: no vault path`（終了コード 2） | `OBSIDIAN_VAULT_PATH` が未設定。`task rules-validate VAULT=~/ai-memory` で実行 |
 | `validate_vault.py` が索引漏れ・wikilink 切れを報告 | 手順 4 の `MEMORY.md` 追記を直す。`&&` で繋いでいるため commit はされていない |
 
 ### 6. 候補一覧を削除する
@@ -122,7 +122,7 @@ rm ~/Project/writing-style/out/candidates-*.md
 
 ## 終わったことの確認
 
-- `make rules-validate` が `0 finding(s)`、Vault の `git status --short` が空、`out/` に候補一覧が無い。
+- `task rules-validate` が `0 finding(s)`、Vault の `git status --short` が空、`out/` に候補一覧が無い。
 - 次のセッションで該当 `scope` の文章を書かせ、同じ指摘が出ない。出たら `## NG / OK` に例を追加する。
 
 ## 日常の習慣
