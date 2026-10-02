@@ -1,0 +1,161 @@
+# Canonical command interface (ADR-0026; contract: .ai/contracts/foundation/task-targets.md),
+# wired for this repository: standard-library Python under src/ and tests/, formatted and
+# linted by ruff through uv (pyproject.toml). Every agent, hook, and CI job calls ONLY these
+# tasks. Optional FILE=<path> narrows format/lint to one file. Inherited foundation scripts
+# under scripts/ are tested by their own suite and byte-compiled here; they are not
+# reformatted (the inheritance contract requires them to stay byte-identical to the parent).
+version: "3"
+
+vars:
+  FILE: '{{.FILE | default ""}}'
+  FLEET_WORKSPACE_ROOT: '{{.FLEET_WORKSPACE_ROOT | default ".."}}'
+
+tasks:
+  default:
+    desc: List available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  setup:
+    desc: Install toolchain (uv-managed dev group) and git hooks — idempotent
+    cmds:
+      - uv sync
+      - cmd: |
+          if command -v pre-commit >/dev/null 2>&1; then pre-commit install --hook-type pre-commit --hook-type pre-push; else echo "[project] setup: pre-commit not installed — local hooks skipped (CI runs the same gates)"; fi
+        silent: true
+
+  format:
+    desc: Auto-format src/ and tests/ (all, or FILE=<path>)
+    cmds:
+      - cmd: uv run ruff format src tests
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: uv run ruff check --fix-only src tests
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: uv run ruff format "{{.FILE}}"
+        if: '{{if hasSuffix ".py" .FILE}}true{{else}}false{{end}}'
+      - cmd: uv run ruff check --fix-only "{{.FILE}}"
+        if: '{{if hasSuffix ".py" .FILE}}true{{else}}false{{end}}'
+
+  lint:
+    desc: "Check-only, zero warnings (COD-001): ruff format check + ruff check; byte-compile scripts/"
+    cmds:
+      - cmd: uv run ruff format --check src tests
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: uv run ruff check src tests
+        if: '[ -z "{{.FILE}}" ]'
+      - cmd: python3 -m compileall -q scripts
+        if: '[ -z "{{.FILE}}" ]'
+        silent: true
+      - cmd: uv run ruff format --check "{{.FILE}}"
+        if: '{{if hasSuffix ".py" .FILE}}true{{else}}false{{end}}'
+      - cmd: uv run ruff check "{{.FILE}}"
+        if: '{{if hasSuffix ".py" .FILE}}true{{else}}false{{end}}'
+
+  test:
+    desc: Full test suite (unit + integration) — TST-001
+    cmds:
+      - task: test-unit
+      - task: test-integration
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  test-unit:
+    desc: "Fast unit suite: inherited foundation tests + tests/**/unit (no I/O) — TST-001"
+    silent: true
+    cmds:
+      - python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+      - python3 -m unittest discover -s tests -t . -p 'test_*.py' -k '.unit.'
+
+  test-integration:
+    desc: "Integration suite: tests/**/integration (real files in temp dirs) — TST-001"
+    silent: true
+    cmds:
+      - python3 -m unittest discover -s tests -t . -p 'test_*.py' -k '.integration.'
+
+  coverage:
+    desc: Test with coverage report — TST-003 ratchet
+    silent: true
+    cmds:
+      - rm -rf coverage
+      - >-
+        python3 -m trace --count --missing --summary
+        --ignore-dir '/usr:/opt:/Library' --coverdir coverage
+        --module unittest discover -s scripts/tests -p 'test_*.py'
+      - >-
+        python3 -m trace --count --missing --summary
+        --ignore-dir '/usr:/opt:/Library' --coverdir coverage
+        --module unittest discover -s tests -t . -p 'test_*.py'
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  build:
+    desc: Produce deployable artifact
+    silent: true
+    cmds:
+      - 'echo "[project] build: not applicable — no deployable artifact; scripts run from the checkout"'
+
+  run:
+    desc: Run the application locally
+    silent: true
+    cmds:
+      - 'echo "[project] run: not applicable — invoke a module directly, e.g. uv run python -m src.modules.<name>.interface.cli --help"'
+
+  security-scan:
+    desc: Local security sweep (secrets + deps + config)
+    silent: true
+    cmds:
+      - |
+        if command -v gitleaks >/dev/null 2>&1; then gitleaks detect --no-banner; else echo "[project] gitleaks not installed — CI still enforces SEC-002"; fi
+      - |
+        if command -v trivy >/dev/null 2>&1; then trivy fs --scanners vuln,misconfig,secret --exit-code 1 .; else echo "[project] trivy not installed — CI still enforces SEC-030"; fi
+
+  sbom:
+    desc: Generate SBOM (SPDX + CycloneDX) into ./dist — REL-020
+    silent: true
+    cmds:
+      - mkdir -p dist
+      - |
+        if command -v syft >/dev/null 2>&1; then syft . -o spdx-json=dist/sbom.spdx.json -o cyclonedx-json=dist/sbom.cdx.json && echo "SBOM written to dist/"; else echo "[project] syft not installed — release workflow generates the authoritative SBOM"; fi
+
+  clean:
+    desc: Remove build artifacts and caches (workspace only — GR-031)
+    silent: true
+    cmds:
+      - rm -rf dist coverage .ruff_cache
+      - find . -type d -name "__pycache__" -not -path "./.git/*" -not -path "./.venv/*" -exec rm -rf {} +
+
+  doctor:
+    desc: "Foundation self-check: metadata invariants + guard-hook tests (stack-independent)"
+    silent: true
+    cmds:
+      - bash scripts/template-check.sh
+      - bash .claude/hooks/tests/guard-bash.test.sh
+
+  fleet-audit:
+    desc: Audit every configured local inheritance relationship without writes (FLEET_WORKSPACE_ROOT=<dir>)
+    silent: true
+    cmds:
+      - >-
+        python3 scripts/template_inheritance.py fleet-audit
+        --config docs/foundation/inheritance-fleet.json
+        --workspace-root "{{.FLEET_WORKSPACE_ROOT}}"
+
+  # ---------------------------------------------------------------------------
+  # Project extensions (below the canonical contract; profiles/README.md)
+  # ---------------------------------------------------------------------------
+
+  rules-validate:
+    desc: Validate the vault's writing rules (30_memory/feedback/ja-*.md); VAULT=<path> overrides $OBSIDIAN_VAULT_PATH
+    silent: true
+    cmds:
+      - python3 -m src.modules.rules.interface.cli {{if .VAULT}}--vault "{{.VAULT}}"{{end}}
+
+  extract-candidates:
+    desc: Extract correction candidates from Claude Code transcripts into out/ (SINCE=YYYY-MM-DD MIN_SCORE=N OUT=<file> PROJECTS_DIR=<dir>); the report is local-only
+    silent: true
+    cmds:
+      - >-
+        python3 -m src.modules.extraction.interface.cli
+        {{if .PROJECTS_DIR}}--projects-dir "{{.PROJECTS_DIR}}"{{end}}
+        {{if .SINCE}}--since "{{.SINCE}}"{{end}}
+        {{if .MIN_SCORE}}--min-score "{{.MIN_SCORE}}"{{end}}
+        {{if .OUT}}--out "{{.OUT}}"{{end}}
