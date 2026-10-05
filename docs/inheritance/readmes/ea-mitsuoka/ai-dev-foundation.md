@@ -25,7 +25,7 @@ direct, decide, and review.
 | Enforcement L2 | [`.pre-commit-config.yaml`](../../../../.pre-commit-config.yaml) | Any committer: secret scan, branch guard, lint, unit tests |
 | Enforcement L3 | [`.github/workflows/`](../../../../.github/workflows/) | CI, CodeQL, secrets/deps/license scan, container, IaC, DAST, Scorecard, release+SBOM |
 | Stable command interface | [`Taskfile.yml`](../../../../Taskfile.yml) | `task test` etc. (go-task, ADR-0026) — the only entry points automation uses |
-| Stack profiles | [`profiles/`](../../../../profiles/) | Reference Makefile implementations per stack + the canonical target contract |
+| Stack profiles | [`profiles/`](../../../../profiles/) | Reference implementations of the canonical targets per stack |
 | Decisions | [`docs/foundation/adr/`](../../../../docs/foundation/adr/) | Synchronized foundation ADRs + decision log |
 | Knowledge | [`docs/`](../../../../docs/) | Architecture, domain, API, deployment, operations, runbook, troubleshooting, roadmap, glossary |
 | GitHub scaffolding | [`.github/`](../../../../.github/) | Issue forms, PR template, CODEOWNERS, labels-as-code, and Dependabot security settings; version updates use `renovate.json` exclusively |
@@ -40,9 +40,11 @@ direct, decide, and review.
    identity and stack. In the [agent profile](../../../../.github/inheritance/agent-profile.json),
    keep the foundation input and change the final project input's `repository` value to
    the new `OWNER/REPOSITORY`.
-3. **Wire the Makefile**: copy the closest [`profiles/`](../../../../profiles/) Makefile to the
-   root (or implement `setup/format/lint/test/build` yourself) — everything else
-   (hooks, CI) starts working automatically.
+3. **Wire the Taskfile**: install go-task (`brew install go-task`, or
+   `bash scripts/actions/setup-task/install.sh ~/.local/bin` for the pinned release), then
+   start from the closest [`profiles/`](../../../../profiles/) reference implementation (or implement
+   `setup/format/lint/test/build` yourself) — everything else (hooks, CI) starts working
+   automatically.
 4. **Inspect GitHub governance**: run `python3 scripts/github_governance.py plan --root . --repo OWNER/REPOSITORY` after `gh auth login`. It reports policy drift without
    changing settings. Use `audit` for a CI-suitable nonzero drift result. After reviewing
    the plan, run `apply` with an exact `--confirm-repo OWNER/REPOSITORY`. The existing
