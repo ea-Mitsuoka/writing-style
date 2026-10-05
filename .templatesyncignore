@@ -32,7 +32,6 @@
 :!docs/foundation/**
 CHANGELOG.md
 CLAUDE.md
-Makefile
 README.md
 Taskfile.yml
 docs/**
