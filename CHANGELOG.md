@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/ea-Mitsuoka/writing-style/compare/v1.0.0...v2.0.0) (2026-10-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace the Makefile with a Taskfile (ADR-0026) ([#32](https://github.com/ea-Mitsuoka/writing-style/issues/32))
+
+### Features
+
+* **profiles:** replace the profile Makefiles with Taskfiles (ADR-0026) ([#37](https://github.com/ea-Mitsuoka/writing-style/issues/37)) ([ea886c8](https://github.com/ea-Mitsuoka/writing-style/commit/ea886c85c1413a0204c093bb928745e7228e1b67))
+* replace the Makefile with a Taskfile (ADR-0026) ([#32](https://github.com/ea-Mitsuoka/writing-style/issues/32)) ([90b6a00](https://github.com/ea-Mitsuoka/writing-style/commit/90b6a0043f3d0c6f90011d636a28cba954cbb097))
+
+
+### Bug Fixes
+
+* **hooks:** match only the push's own arguments in the GR-010 guard ([#44](https://github.com/ea-Mitsuoka/writing-style/issues/44)) ([2f36752](https://github.com/ea-Mitsuoka/writing-style/commit/2f36752b1db81e71231736bfa2f106c36752ba16))
+
 ## 1.0.0 (2026-09-23)
 
 
